@@ -19,11 +19,11 @@ Window:
 
 Renderer:
 - [ ] OpenGL Buffer Manager
-    - [ ] stores VAO, VBO, EBO
-    - [ ] creates VAO from vertices and indices
-    - [ ] frees (destroy) stored VAO, VBO, EBO
-    - [ ] binds/unbinds VAO
-    - [ ] draws from memory via VAO
+    - [x] stores VAO, VBO, EBO
+    - [x] creates VAO from vertices and indices
+    - [x] frees (destroy) stored VAO, VBO, EBO
+    - [x] binds/unbinds VAO
+    - [x] draws from memory via VAO
 - [ ] OpenGL Framebuffer Manager
     - [ ] stores FBO and TextureID
     - [ ] creates FBO with given width and height
