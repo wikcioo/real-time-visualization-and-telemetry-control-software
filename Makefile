@@ -4,7 +4,8 @@ SRC_DIR = src
 BUILD_DIR = build
 SOURCES += $(SRC_DIR)/main.cpp\
 		   $(SRC_DIR)/application.cpp\
-		   $(SRC_DIR)/window.cpp
+		   $(SRC_DIR)/window.cpp\
+		   $(SRC_DIR)/shader.cpp
 OBJS = $(addprefix $(BUILD_DIR)/, $(addsuffix .cpp.o, $(basename $(notdir $(SOURCES)))))
 UNAME_S := $(shell uname -s)
 

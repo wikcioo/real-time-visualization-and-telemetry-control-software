@@ -48,10 +48,12 @@ Camera:
 - [ ] updates vectors when processing input
 
 Shader:
-- [ ] creates shader program from shader text files
-- [ ] binds/unbinds the program
-- [ ] hot-reloads the program with new shader source code
-- [ ] sets uniforms
+- [x] support vertex and fragment shaders
+- [x] creates shader program from shader text files
+- [x] binds/unbinds the program
+- [x] hot-reloads the program with new shader source code
+- [x] sets uniforms
+- [ ] optimize uniforms by using cache
 
 Mesh:
 - [ ] stores the buffer manager
