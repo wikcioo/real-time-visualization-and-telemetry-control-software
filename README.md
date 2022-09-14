@@ -30,11 +30,9 @@ Renderer:
     - [ ] frees resources stored in FBO and TextureID
     - [ ] binds/unbinds framebuffer
 - [ ] OpenGL Context
-    - [ ] gets window pointer
-    - [ ] initializes glew
-    - [ ] prepares for rendering
-    - [ ] executes post rendering code
-    - [ ] frees resources (destroys window)
+    - [x] gets window pointer
+    - [x] initializes glew
+    - [x] prepares for rendering
 - [ ] OpenGL UI Context
     - [ ] initializes imgui context
     - [ ] prepares for rendering

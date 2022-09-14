@@ -5,6 +5,12 @@ static void glfw_error_callback(int code, const char* description)
     fprintf(stderr, "GLFW ERROR: %d -> '%s'\n", code, description);
 }
 
+void GLWindow::glfw_framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    auto win = static_cast<GLWindow*>(glfwGetWindowUserPointer(window));
+    win->m_GLContext->SetViewport(width, height);
+}
+
 void GLWindow::glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     auto win = static_cast<GLWindow*>(glfwGetWindowUserPointer(window));
@@ -29,6 +35,7 @@ GLWindow::GLWindow(unsigned int width, unsigned int height, const std::string& t
     : m_Window(nullptr), m_Width(width), m_Height(height), m_Title(title), m_IsRunning(true)
 {
     // TODO: Initialize OpenGL and UI Context
+    m_GLContext = std::make_unique<OpenGLContext>(this);
 }
 
 GLWindow::~GLWindow()
@@ -50,16 +57,22 @@ void GLWindow::Initialize()
 
     glfwSetWindowUserPointer(m_Window, this);
 
+    glfwSetFramebufferSizeCallback(m_Window, glfw_framebuffer_size_callback);
     glfwSetKeyCallback(m_Window, glfw_key_callback);
     glfwSetCursorPosCallback(m_Window, glfw_cursor_callback);
     glfwSetScrollCallback(m_Window, glfw_scroll_callback);
 
     glfwMakeContextCurrent(m_Window);
     glfwSwapInterval(1);
+
+    m_GLContext->Initialize();
 }
 
 void GLWindow::Loop()
 {
     glfwPollEvents();
+
+    m_GLContext->Clear();
+
     glfwSwapBuffers(m_Window);
 }
