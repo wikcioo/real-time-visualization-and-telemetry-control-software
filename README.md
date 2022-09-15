@@ -13,8 +13,8 @@ Application:
 Window:
 - [x] controls if the application is running
 - [x] initializes window parameters
-- [ ] contains opengl context and opengl ui context
-- [ ] initializes contexts
+- [x] contains opengl context and opengl ui context
+- [x] initializes contexts
 - [x] sets input callbacks
 
 Renderer:
@@ -33,11 +33,11 @@ Renderer:
     - [x] gets window pointer
     - [x] initializes glew
     - [x] prepares for rendering
-- [ ] OpenGL UI Context
-    - [ ] initializes imgui context
-    - [ ] prepares for rendering
-    - [ ] renders what's stored in imgui frame (populated somewhere else)
-    - [ ] frees resources
+- [x] OpenGL UI Context
+    - [x] initializes imgui context
+    - [x] prepares for rendering
+    - [x] renders what's stored in imgui frame (populated somewhere else)
+    - [x] frees resources
 
 Camera:
 - [ ] keeps view matrix and projection
