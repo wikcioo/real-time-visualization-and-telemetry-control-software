@@ -1,4 +1,4 @@
-#include "../include/opengl_buffer_manager.hpp"
+#include "opengl_buffer_manager.hpp"
 
 #include <GL/glew.h>
 

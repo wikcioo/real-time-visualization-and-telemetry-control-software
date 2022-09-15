@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "../include/opengl_context.hpp"
-#include "../include/window.hpp"
+#include "opengl_context.hpp"
+#include "window.hpp"
 
 OpenGLContext::OpenGLContext(GLWindow* window)
     : m_Window(window)
