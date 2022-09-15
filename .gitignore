@@ -1,3 +1,4 @@
 build/
 vendor/imgui/objs/
 .ccls
+imgui.ini

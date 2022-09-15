@@ -1,4 +1,4 @@
-#include "../include/window.hpp"
+#include "window.hpp"
 
 static void glfw_error_callback(int code, const char* description)
 {
@@ -16,7 +16,7 @@ void GLWindow::glfw_key_callback(GLFWwindow* window, int key, int scancode, int 
     auto win = static_cast<GLWindow*>(glfwGetWindowUserPointer(window));
 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        win->m_IsRunning = false;
+        glfwSetWindowShouldClose(win->GetWindow(), true);
 }
 
 void GLWindow::glfw_cursor_callback(GLFWwindow* window, double posX, double posY)
@@ -32,15 +32,14 @@ void GLWindow::glfw_scroll_callback(GLFWwindow* window, double xOffset, double y
 }
 
 GLWindow::GLWindow(unsigned int width, unsigned int height, const std::string& title)
-    : m_Window(nullptr), m_Width(width), m_Height(height), m_Title(title), m_IsRunning(true)
+    : m_Window(nullptr), m_Width(width), m_Height(height), m_Title(title)
 {
-    // TODO: Initialize OpenGL and UI Context
     m_GLContext = std::make_unique<OpenGLContext>(this);
+    m_UIContext = std::make_unique<UIContext>(this);
 }
 
 GLWindow::~GLWindow()
 {
-    // TODO: De-initialize OpenGL and UI Context
     glfwDestroyWindow(m_Window);
     glfwTerminate();
 }
@@ -66,6 +65,7 @@ void GLWindow::Initialize()
     glfwSwapInterval(1);
 
     m_GLContext->Initialize();
+    m_UIContext->Initialize();
 }
 
 void GLWindow::Loop()
@@ -73,6 +73,10 @@ void GLWindow::Loop()
     glfwPollEvents();
 
     m_GLContext->Clear();
+    m_UIContext->BeginFrame();
+    ImGui::Begin("Hello, world!");
+    ImGui::End();
+    m_UIContext->EndFrame();
 
     glfwSwapBuffers(m_Window);
 }

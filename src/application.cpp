@@ -1,4 +1,4 @@
-#include "../include/application.hpp"
+#include "application.hpp"
 
 Application::Application(const std::string& title)
 {
@@ -8,7 +8,7 @@ Application::Application(const std::string& title)
 
 void Application::Run()
 {
-    while (m_Window->IsRunning())
+    while (!m_Window->GetWindowShouldClose())
     {
         m_Window->Loop();
     }
