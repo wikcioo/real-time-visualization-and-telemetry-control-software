@@ -18,18 +18,18 @@ Window:
 - [x] sets input callbacks
 
 Renderer:
-- [ ] OpenGL Buffer Manager
+- [x] OpenGL Buffer Manager
     - [x] stores VAO, VBO, EBO
     - [x] creates VAO from vertices and indices
     - [x] frees (destroy) stored VAO, VBO, EBO
     - [x] binds/unbinds VAO
     - [x] draws from memory via VAO
-- [ ] OpenGL Framebuffer Manager
-    - [ ] stores FBO and TextureID
-    - [ ] creates FBO with given width and height
-    - [ ] frees resources stored in FBO and TextureID
-    - [ ] binds/unbinds framebuffer
-- [ ] OpenGL Context
+- [x] OpenGL Framebuffer Manager
+    - [x] stores FBO and TextureID
+    - [x] creates FBO with given width and height
+    - [x] frees resources stored in FBO and TextureID
+    - [x] binds/unbinds framebuffer
+- [x] OpenGL Context
     - [x] gets window pointer
     - [x] initializes glew
     - [x] prepares for rendering
