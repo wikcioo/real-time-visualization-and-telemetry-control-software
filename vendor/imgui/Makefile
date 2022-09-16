@@ -1,6 +1,6 @@
 OBJ_DIR = objs
-SOURCES += imgui.cpp imgui_demo.cpp imgui_draw.cpp imgui_tables.cpp imgui_widgets.cpp
-SOURCES += backends/imgui_impl_glfw.cpp backends/imgui_impl_opengl3.cpp
+SOURCES = $(wildcard *.cpp)
+SOURCES += $(wildcard backends/*.cpp)
 OBJS = $(addsuffix .cpp.o, $(basename $(notdir $(SOURCES))))
 TARGET_OBJS = $(addprefix $(OBJ_DIR)/, $(OBJS))
 
