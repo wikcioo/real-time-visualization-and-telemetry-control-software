@@ -40,10 +40,10 @@ Renderer:
     - [x] frees resources
 
 Camera:
-- [ ] keeps view matrix and projection
-- [ ] has position, direction and other vectors
-- [ ] fov and acpect ratios
-- [ ] updates vectors when processing input
+- [x] keeps view matrix and projection
+- [x] has position, direction and other vectors
+- [x] fov and acpect ratios
+- [x] updates vectors when processing input
 
 Shader:
 - [x] support vertex and fragment shaders

@@ -9,7 +9,8 @@ SOURCES += $(SRC_DIR)/main.cpp\
 		   $(SRC_DIR)/shader.cpp\
 		   $(SRC_DIR)/opengl_buffer_manager.cpp\
 		   $(SRC_DIR)/opengl_context.cpp\
-		   $(SRC_DIR)/ui_context.cpp
+		   $(SRC_DIR)/ui_context.cpp\
+		   $(SRC_DIR)/camera.cpp
 OBJS = $(addprefix $(BUILD_DIR)/, $(addsuffix .cpp.o, $(basename $(notdir $(SOURCES)))))
 IMGUI_OBJS =
 UNAME_S := $(shell uname -s)
