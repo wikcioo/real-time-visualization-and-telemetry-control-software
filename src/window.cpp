@@ -31,8 +31,15 @@ void GLWindow::glfw_scroll_callback(GLFWwindow* window, double xOffset, double y
     (void)win;
 }
 
+void GLWindow::updateTime()
+{
+    double now = glfwGetTime();
+    m_DeltaTime = now - m_LastTime;
+    m_LastTime = now;
+}
+
 GLWindow::GLWindow(unsigned int width, unsigned int height, const std::string& title)
-    : m_Window(nullptr), m_Width(width), m_Height(height), m_Title(title)
+    : m_Window(nullptr), m_Width(width), m_Height(height), m_Title(title), m_DeltaTime(0.0f), m_LastTime(0.0f)
 {
     m_GLContext = std::make_unique<OpenGLContext>(this);
     m_UIContext = std::make_unique<UIContext>(this);
@@ -71,6 +78,7 @@ void GLWindow::Initialize()
 void GLWindow::Loop()
 {
     glfwPollEvents();
+    updateTime();
 
     m_GLContext->Clear();
     m_UIContext->BeginFrame();

@@ -26,8 +26,11 @@ private:
     GLFWwindow* m_Window;
     unsigned int m_Width, m_Height;
     std::string m_Title;
+    double m_DeltaTime, m_LastTime;
     std::unique_ptr<OpenGLContext> m_GLContext;
     std::unique_ptr<UIContext> m_UIContext;
+private:
+    void updateTime();
 
     static void glfw_framebuffer_size_callback(GLFWwindow* window, int width, int height);
     static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
