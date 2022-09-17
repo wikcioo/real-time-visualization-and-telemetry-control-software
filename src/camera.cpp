@@ -1,11 +1,17 @@
 #include "camera.hpp"
 
 PerspectiveCamera::PerspectiveCamera(const glm::vec3& position, const glm::vec3& direction, float aspectRatio)
-    : m_ProjectionMatrix(glm::perspective(DefaultFov, aspectRatio, 0.1f, 100.0f)), m_ViewMatrix(1.0f),
-      m_Position(position), m_Front(glm::normalize(direction)), m_Right(1.0f), m_Up(1.0f),
-      m_Pitch(0.0f), m_Yaw(-90.0f), m_MovementSpeed(DefaultMovementSpeed), m_CameraSensitivity(DefaultCameraSensitivity)
+    : m_ProjectionMatrix(1.0f), m_ViewMatrix(1.0f), m_Position(position), m_Front(glm::normalize(direction)), m_Right(1.0f), m_Up(1.0f),
+      m_Pitch(0.0f), m_Yaw(-90.0f), m_AspectRatio(aspectRatio), m_MovementSpeed(DefaultMovementSpeed), m_CameraSensitivity(DefaultCameraSensitivity)
 {
+    SetAspectRatio(m_AspectRatio);
     UpdateViewMatrix();
+}
+
+void PerspectiveCamera::SetAspectRatio(float aspectRatio)
+{
+    m_AspectRatio = aspectRatio;
+    m_ProjectionMatrix = glm::perspective(DefaultFov, m_AspectRatio, 0.1f, 100.0f);
 }
 
 void PerspectiveCamera::ProcessKeyboard(MovementDirection movementDirection, float dt)

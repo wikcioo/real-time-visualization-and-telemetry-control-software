@@ -17,6 +17,7 @@ class PerspectiveCamera
 public:
     PerspectiveCamera(const glm::vec3& position, const glm::vec3& direction, float aspectRatio);
 
+    void SetAspectRatio(float aspectRatio);
     void ProcessKeyboard(MovementDirection movementDirection, float dt);
     void ProcessMouseMovement(float xChange, float yChange);
 
@@ -34,6 +35,7 @@ private:
     float m_Pitch;
     float m_Yaw;
 
+    float m_AspectRatio;
     float m_MovementSpeed;
     float m_CameraSensitivity;
 private:
