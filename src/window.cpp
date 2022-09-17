@@ -73,6 +73,7 @@ void GLWindow::Initialize()
 
     m_GLContext->Initialize();
     m_UIContext->Initialize();
+    m_SceneView = std::make_unique<SceneView>(m_Width, m_Height);
 }
 
 void GLWindow::Loop()
@@ -82,8 +83,9 @@ void GLWindow::Loop()
 
     m_GLContext->Clear();
     m_UIContext->BeginFrame();
-    ImGui::Begin("Hello, world!");
-    ImGui::End();
+    static bool demo = true;
+    ImGui::ShowDemoWindow(&demo);
+    m_SceneView->Draw();
     m_UIContext->EndFrame();
 
     glfwSwapBuffers(m_Window);

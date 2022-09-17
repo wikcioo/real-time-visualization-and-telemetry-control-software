@@ -64,7 +64,7 @@ Entity:
 
 Scene:
 - [ ] contains camera, framebuffer, entities, lighting information
-- [ ] during rendering prepares framebuffer and new imgui scene filled with texture from the ui context
+- [x] during rendering prepares framebuffer and new imgui scene filled with texture from the ui context
 
 Control Panels:
 - [ ] render imgui widgets
