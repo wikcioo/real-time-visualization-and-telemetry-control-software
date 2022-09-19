@@ -54,16 +54,23 @@ Shader:
 - [ ] optimize uniforms by using cache
 
 Mesh:
-- [ ] stores the buffer manager
-- [ ] stores vertices and indices which the buffer manager uses
+- [x] stores the buffer manager
+- [x] stores vertices and indices which the buffer manager uses
 - [ ] loads meshes from files (using assimp)
-- [ ] draws using buffer manager
+- [x] draws using buffer manager
+
+Material:
+- [x] keeps the material's shader
+- [x] holds all relevant uniforms
 
 Entity:
-- [ ] contains of mesh, shader and its translations
+- [x] contains of mesh, main shader, material and its translations
+- [x] methods to change translations
+- [x] draws using shader and mesh
 
 Scene:
-- [ ] contains camera, framebuffer, entities, lighting information
+- [ ] contains lighting information
+- [x] contains camera, framebuffer, entities
 - [x] during rendering prepares framebuffer and new imgui scene filled with texture from the ui context
 
 Control Panels:
