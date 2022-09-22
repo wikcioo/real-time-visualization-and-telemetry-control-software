@@ -7,7 +7,7 @@
 SceneView::SceneView(int width, int height)
     : m_Width(width), m_Height(height), m_IsWindowHovered(false), m_Camera(nullptr), m_Framebuffer(nullptr)
 {
-    m_Camera = std::make_unique<PerspectiveCamera>(glm::vec3(0, 0, 2), glm::vec3(0, 0, -1), m_Width / m_Height);
+    m_Camera = std::make_unique<FpvCamera>(glm::vec3(0, 0, 4), glm::vec3(0, 0, -1), m_Width / m_Height);
     m_Framebuffer = std::make_unique<renderer::GLFrameBuffer>();
     m_Framebuffer->CreateBuffers(m_Width, m_Height);
 
@@ -17,14 +17,6 @@ SceneView::SceneView(int width, int height)
 SceneView::~SceneView()
 {
     m_Framebuffer->DeleteBuffers();
-}
-
-void SceneView::SetSize(int width, int height)
-{
-    m_Width = width;
-    m_Height = height;
-    m_Framebuffer->DeleteBuffers();
-    m_Framebuffer->CreateBuffers(m_Width, m_Height);
 }
 
 void SceneView::InitializeEntities()
@@ -52,7 +44,7 @@ void SceneView::InitializeEntities()
 
     std::shared_ptr<Entity> e1 = std::make_shared<Entity>();
     e1->Initialize(vertices, indices, "res/shaders/basic_vs.glsl", "res/shaders/basic_fs.glsl");
-    m_Entities.insert({"square", e1});
+    m_Entities.insert({"cube", e1});
 }
 
 static bool s_MouseFirstEnter = true;
@@ -71,16 +63,8 @@ void SceneView::Update(float dt)
 
         m_LastMousePosition = std::make_pair(std::get<0>(v), std::get<1>(v));
 
-        m_Camera->ProcessMouseMovement(xChange, yChange);
-
-        if (Input::IsKeyPressed(GLFW_KEY_W))
-            m_Camera->ProcessKeyboard(MovementDirection::FORWARD, dt);
-        if (Input::IsKeyPressed(GLFW_KEY_S))
-            m_Camera->ProcessKeyboard(MovementDirection::BACKWARD, dt);
-        if (Input::IsKeyPressed(GLFW_KEY_A))
-            m_Camera->ProcessKeyboard(MovementDirection::LEFT, dt);
-        if (Input::IsKeyPressed(GLFW_KEY_D))
-            m_Camera->ProcessKeyboard(MovementDirection::RIGHT, dt);
+        m_Camera->ProcessKeyPress(dt);
+        m_Camera->ProcessMouseMovement(xChange, yChange, dt);
     }
 }
 
@@ -93,7 +77,7 @@ void SceneView::Draw()
 
     for (auto entity : m_Entities)
     {
-        entity.second->Draw(m_Camera->GetViewProjection());
+        entity.second->Draw(m_Camera->GetViewProjectionMatrix());
     }
 
     m_Framebuffer->Unbind();
@@ -109,10 +93,12 @@ void SceneView::Draw()
     m_IsWindowHovered = ImGui::IsWindowHovered();
     ImGui::PopStyleVar();
     ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-    m_Width = viewportPanelSize.x;
-    m_Height = viewportPanelSize.y;
-
-    m_Camera->SetAspectRatio(m_Width / m_Height);
+    if (viewportPanelSize.x != m_Width || viewportPanelSize.y != m_Height)
+    {
+        m_Width = viewportPanelSize.x;
+        m_Height = viewportPanelSize.y;
+        m_Camera->SetAspectRatio(m_Width / m_Height);
+    }
     unsigned int textureID = m_Framebuffer->GetTextureID();
     ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_Width, m_Height }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
     ImGui::End();
