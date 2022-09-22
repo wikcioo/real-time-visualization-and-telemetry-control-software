@@ -31,7 +31,7 @@ all:
 $(BUILD_DIR)/$(EXE): $(OBJS)
 	$(CXX) -o $@ $^ $(wildcard $(IMGUI_DIR)/objs/*.cpp.o) $(CXXFLAGS) $(LIBS)
 
-$(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
+$(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp $(INC_DIR)/%.hpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
