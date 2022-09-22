@@ -1,43 +1,41 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
-enum class MovementDirection
-{
-    FORWARD, BACKWARD, LEFT, RIGHT
-};
+static constexpr float s_DefaultFov = 45.0f;
+static constexpr float s_DefaultMovementSpeed = 3.0f;
+static constexpr float s_DefaultCameraSensitivity = 0.05f;
 
-static constexpr float DefaultFov = 45.0f;
-static constexpr float DefaultMovementSpeed = 3.0f;
-static constexpr float DefaultCameraSensitivity = 0.05f;
-
-class PerspectiveCamera
+class Camera
 {
 public:
-    PerspectiveCamera(const glm::vec3& position, const glm::vec3& direction, float aspectRatio);
+    Camera(const glm::vec3& position, const glm::vec3& direction)
+        : m_ProjectionMatrix(1.0f), m_ViewMatrix(1.0f), m_ViewProjectionMatrix(1.0f),
+        m_Position(position), m_Direction(glm::normalize(direction)), m_Right(1, 0, 0), m_Up(0, 1, 0),
+        m_CameraSensitivity(s_DefaultCameraSensitivity)
+    {
+    }
 
-    void SetAspectRatio(float aspectRatio);
-    void ProcessKeyboard(MovementDirection movementDirection, float dt);
-    void ProcessMouseMovement(float xChange, float yChange);
+    virtual ~Camera() {}
 
-    const glm::mat4& GetViewProjection() const { return m_ViewProjectionMatrix; }
-private:
+    virtual void ProcessKeyPress(float dt) = 0;
+    virtual void ProcessMouseMovement(float xChange, float yChange, float dt) = 0;
+
+    const glm::mat4& GetViewProjectionMatrix() const
+    {
+        return m_ViewProjectionMatrix;
+    }
+protected:
     glm::mat4 m_ProjectionMatrix;
     glm::mat4 m_ViewMatrix;
     glm::mat4 m_ViewProjectionMatrix;
 
     glm::vec3 m_Position;
-    glm::vec3 m_Front;
+    glm::vec3 m_Direction;
     glm::vec3 m_Right;
     glm::vec3 m_Up;
 
-    float m_Pitch;
-    float m_Yaw;
-
-    float m_AspectRatio;
-    float m_MovementSpeed;
     float m_CameraSensitivity;
-private:
-    void UpdateViewMatrix();
+protected:
+    virtual void RecalculateMatrices() = 0;
 };
