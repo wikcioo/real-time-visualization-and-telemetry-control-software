@@ -74,5 +74,5 @@ Scene:
 - [x] during rendering prepares framebuffer and new imgui scene filled with texture from the ui context
 
 Control Panels:
-- [ ] render imgui widgets
-- [ ] gets an entitie from the scene to modify it's translations
+- [x] render imgui widgets
+- [x] gets an entitie from the scene to modify it's translations
