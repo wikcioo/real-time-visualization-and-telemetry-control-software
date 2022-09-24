@@ -1,16 +1,21 @@
 #include "scene_view.hpp"
 #include "input.hpp"
 
+#include <glm/gtc/matrix_transform.hpp>
 #include <GL/glew.h>
 #include "imgui.h"
 
-SceneView::SceneView(int width, int height)
-    : m_Width(width), m_Height(height), m_IsWindowHovered(false), m_Camera(nullptr), m_Framebuffer(nullptr)
+SceneView::SceneView(int width, int height, CameraType cameraType)
+    : m_Width(width), m_Height(height), m_IsSceneInteractive(false), m_MouseFirstEnter(true),
+    m_CameraType(cameraType), m_Framebuffer(std::make_unique<renderer::GLFrameBuffer>())
 {
-    m_Camera = std::make_unique<FpvCamera>(glm::vec3(0, 0, 4), glm::vec3(0, 0, -1), m_Width / m_Height);
-    m_Framebuffer = std::make_unique<renderer::GLFrameBuffer>();
-    m_Framebuffer->CreateBuffers(m_Width, m_Height);
+    if (m_CameraType == CameraType::ARCBALL) {
+        m_Camera = std::make_unique<ArcballCamera>(glm::vec3(0, 0, 6), glm::vec3(0), m_Width / m_Height);
+    } else {
+        m_Camera = std::make_unique<FpvCamera>(glm::vec3(0, 0, 6), glm::vec3(0, 0, -1), m_Width / m_Height);
+    }
 
+    m_Framebuffer->CreateBuffers(m_Width, m_Height);
     InitializeEntities();
 }
 
@@ -43,20 +48,103 @@ void SceneView::InitializeEntities()
     };
 
     std::shared_ptr<Entity> e1 = std::make_shared<Entity>();
-    e1->Initialize(vertices, indices, "res/shaders/basic_vs.glsl", "res/shaders/basic_fs.glsl");
+    e1->Initialize(vertices, indices, GL_TRIANGLES, "res/shaders/basic_vs.glsl", "res/shaders/basic_fs.glsl");
+    e1->SetScale(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)));
     m_Entities.insert({"cube", e1});
+
+    vertices.clear();
+    indices.clear();
+
+    int slices = 50;
+    for(int j=0; j<=slices; ++j) {
+        for(int i=0; i<=slices; ++i) {
+            float x = (float)i/(float)slices;
+            float y = 0;
+            float z = (float)j/(float)slices;
+            vertices.push_back({glm::vec3(x, y, z)});
+        }
+    }
+
+    for(int j=0; j<slices; ++j) {
+        for(int i=0; i<slices; ++i) {
+            int row1 =  j    * (slices+1);
+            int row2 = (j+1) * (slices+1);
+
+            indices.push_back(row1+1);
+            indices.push_back(row1+i+1);
+            indices.push_back(row1+i+1);
+            indices.push_back(row2+i+1);
+
+            indices.push_back(row2+i+1);
+            indices.push_back(row2+i);
+            indices.push_back(row2+i);
+            indices.push_back(row1+i);
+        }
+    }
+
+    std::shared_ptr<Entity> e2 = std::make_shared<Entity>();
+    e2->Initialize(vertices, indices, GL_LINES, "res/shaders/basic_vs.glsl", "res/shaders/basic_fs.glsl");
+    float scale = 100.0f;
+    e2->SetScale(glm::scale(glm::mat4(1.0f), glm::vec3(scale)));
+    e2->SetTranslation(glm::translate(glm::mat4(1.0f), glm::vec3(-scale/2, 0.0f, -scale/2)));
+    m_Entities.insert({"plane", e2});
 }
 
-static bool s_MouseFirstEnter = true;
+std::shared_ptr<Entity> SceneView::GetEntity(const std::string& name)
+{
+    auto pos = m_Entities.find(name);
+    if (pos != m_Entities.end())
+    {
+        return pos->second;
+    }
+    std::cout << "No entity found with name: " << name << std::endl;
+    return {};
+}
+
+void SceneView::SetSceneInteractive(bool interactive)
+{
+    m_IsSceneInteractive = interactive;
+    m_MouseFirstEnter = true;
+    if (interactive)
+    {
+        glfwSetInputMode(Input::s_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
+    }
+    else
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+    }
+}
+
+void SceneView::SetCameraType(const CameraType& type)
+{
+    m_CameraType = type;
+    if (m_CameraType == CameraType::ARCBALL) {
+        m_Camera = std::make_unique<ArcballCamera>(glm::vec3(0, 0, 6), glm::vec3(0), m_Width / m_Height);
+    } else {
+        m_Camera = std::make_unique<FpvCamera>(glm::vec3(0, 0, 6), glm::vec3(0, 0, -1), m_Width / m_Height);
+        m_MouseFirstEnter = true;
+    }
+}
+
+void SceneView::PrintEntities()
+{
+    for (auto& e : m_Entities) {
+        std::cout << e.first << " " << e.second->GetID() << std::endl;
+    }
+}
+
 void SceneView::Update(float dt)
 {
-    if (m_IsWindowHovered)
+    if (m_IsSceneInteractive)
     {
         auto v = Input::GetMousePosition();
-        if (s_MouseFirstEnter)
+        if (m_MouseFirstEnter)
         {
             m_LastMousePosition = std::make_pair(v.first, v.second);
-            s_MouseFirstEnter = false;
+            m_MouseFirstEnter = false;
         }
         double xChange = std::get<0>(v) - m_LastMousePosition.first;
         double yChange = m_LastMousePosition.second - std::get<1>(v);
@@ -90,7 +178,8 @@ void SceneView::Draw()
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("Scene", NULL, window_flags);
-    m_IsWindowHovered = ImGui::IsWindowHovered();
+    if (!m_IsSceneInteractive)
+        SetSceneInteractive(ImGui::IsWindowHovered() && Input::IsKeyPressed(GLFW_KEY_G));
     ImGui::PopStyleVar();
     ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
     if (viewportPanelSize.x != m_Width || viewportPanelSize.y != m_Height)
