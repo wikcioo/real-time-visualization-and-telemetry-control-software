@@ -2,7 +2,10 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+unsigned int Entity::id = 1;
+
 Entity::Entity()
+    : m_ID(id++)
 {
 }
 
@@ -12,7 +15,7 @@ Entity::~Entity()
 }
 
 void Entity::Initialize(
-        std::vector<Vertex> vertices, std::vector<unsigned int> indices,
+        std::vector<Vertex> vertices, std::vector<unsigned int> indices, unsigned int mode,
         const char *vs_filename, const char *fs_filename,
         const glm::mat4& translation, const glm::mat4& rotation, const glm::mat4& scale
 )
@@ -20,7 +23,7 @@ void Entity::Initialize(
     m_Shader = std::make_shared<Shader>(vs_filename, fs_filename);
 
     m_Mesh = std::make_unique<Mesh>();
-    m_Mesh->Initialize(vertices, indices);
+    m_Mesh->Initialize(vertices, indices, mode);
 
     m_Material = std::make_unique<Material>();
     m_Material->Initialize(m_Shader, 0.3f, 0.5f, 1.0f);
@@ -48,6 +51,11 @@ void Entity::SetScale(const glm::mat4& scale)
 {
     m_Scale = scale;
     RecalculateModelMatrix();
+}
+
+void Entity::SetColor(const glm::vec3& color)
+{
+    m_Shader->SetVec3("u_Color", color);
 }
 
 void Entity::RecalculateModelMatrix()
