@@ -23,7 +23,7 @@ namespace renderer {
         void Bind();
         void Unbind();
 
-        void Draw();
+        void Draw(unsigned int mode);
     private:
         unsigned int m_VAO, m_VBO, m_EBO, m_IndexCount;
     };

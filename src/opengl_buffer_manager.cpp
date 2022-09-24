@@ -55,10 +55,10 @@ namespace renderer {
         glBindVertexArray(0);
     }
 
-    void GLVertexBuffer::Draw()
+    void GLVertexBuffer::Draw(unsigned int mode)
     {
         Bind();
-        glDrawElements(GL_TRIANGLES, m_IndexCount, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(mode, m_IndexCount, GL_UNSIGNED_INT, nullptr);
         Unbind();
     }
 
