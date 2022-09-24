@@ -12,7 +12,12 @@ ArcballCamera::ArcballCamera(const glm::vec3& position, const glm::vec3& target,
 
 void ArcballCamera::ProcessKeyPress(float dt)
 {
-    // Not needed for the time being
+    if (Input::IsKeyPressed(GLFW_KEY_R))
+    {
+        m_Target = glm::vec3(0);
+    }
+
+    RecalculateMatrices();
 }
 
 void ArcballCamera::ProcessMouseMovement(float xChange, float yChange, float dt)
