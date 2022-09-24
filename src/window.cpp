@@ -6,6 +6,16 @@ static void glfw_error_callback(int code, const char* description)
     fprintf(stderr, "GLFW ERROR: %d -> '%s'\n", code, description);
 }
 
+void GLWindow::processInput()
+{
+    if (Input::IsKeyPressed(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(m_Window, true);
+    if (Input::IsKeyPressed(GLFW_KEY_Q))
+    {
+        m_SceneView->SetSceneInteractive(false);
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+}
+
 void GLWindow::updateTime()
 {
     double now = glfwGetTime();
@@ -49,25 +59,25 @@ void GLWindow::Initialize()
     Input::Initialize(m_Window);
     m_GLContext->Initialize();
     m_UIContext->Initialize();
-    m_SceneView = std::make_unique<SceneView>(m_Width, m_Height);
+    m_SceneView = std::make_shared<SceneView>(m_Width, m_Height, CameraType::FPV);
+    m_ControlPanel = std::make_unique<ControlPanel>();
 }
 
 void GLWindow::Loop()
 {
     glfwPollEvents();
+    processInput();
     updateTime();
 
     m_GLContext->Clear();
     m_UIContext->BeginFrame();
 
-    static bool demo = true;
-    ImGui::ShowDemoWindow(&demo);
+    m_ControlPanel->Draw(m_SceneView);
 
     m_SceneView->Update(m_DeltaTime);
     m_SceneView->Draw();
 
     m_UIContext->EndFrame();
 
-    if (Input::IsKeyPressed(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(m_Window, true);
     glfwSwapBuffers(m_Window);
 }

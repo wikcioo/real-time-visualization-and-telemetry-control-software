@@ -7,6 +7,7 @@
 #include "opengl_context.hpp"
 #include "ui_context.hpp"
 #include "scene_view.hpp"
+#include "control_panel.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -30,7 +31,9 @@ private:
     double m_DeltaTime, m_LastTime;
     std::unique_ptr<OpenGLContext> m_GLContext;
     std::unique_ptr<UIContext> m_UIContext;
-    std::unique_ptr<SceneView> m_SceneView;
+    std::shared_ptr<SceneView> m_SceneView;
+    std::unique_ptr<ControlPanel> m_ControlPanel;
 private:
     void updateTime();
+    void processInput();
 };
