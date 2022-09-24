@@ -10,13 +10,6 @@ ArcballCamera::ArcballCamera(const glm::vec3& position, const glm::vec3& target,
     RecalculateMatrices();
 }
 
-void ArcballCamera::SetAspectRatio(float aspectRatio)
-{
-    m_AspectRatio = aspectRatio;
-    m_ProjectionMatrix = glm::perspective(glm::radians(s_DefaultFov), m_AspectRatio, 0.1f, 100.0f);
-    RecalculateMatrices();
-}
-
 void ArcballCamera::ProcessKeyPress(float dt)
 {
     // Not needed for the time being

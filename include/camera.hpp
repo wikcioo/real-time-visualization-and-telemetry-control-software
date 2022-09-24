@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 static constexpr float s_DefaultFov = 45.0f;
 static constexpr float s_DefaultMovementSpeed = 3.0f;
@@ -18,10 +19,17 @@ public:
 
     virtual ~Camera() {}
 
+    virtual void SetAspectRatio(float aspectRatio)
+    {
+        m_AspectRatio = aspectRatio;
+        m_ProjectionMatrix = glm::perspective(glm::radians(s_DefaultFov), m_AspectRatio, 0.1f, 100.0f);
+        RecalculateMatrices();
+    }
+
     virtual void ProcessKeyPress(float dt) = 0;
     virtual void ProcessMouseMovement(float xChange, float yChange, float dt) = 0;
 
-    const glm::mat4& GetViewProjectionMatrix() const
+    virtual const glm::mat4& GetViewProjectionMatrix() const
     {
         return m_ViewProjectionMatrix;
     }
@@ -35,6 +43,7 @@ protected:
     glm::vec3 m_Right;
     glm::vec3 m_Up;
 
+    float m_AspectRatio;
     float m_CameraSensitivity;
 protected:
     virtual void RecalculateMatrices() = 0;

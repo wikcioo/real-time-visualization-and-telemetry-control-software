@@ -10,13 +10,6 @@ FpvCamera::FpvCamera(const glm::vec3& position, const glm::vec3& direction, floa
     RecalculateMatrices();
 }
 
-void FpvCamera::SetAspectRatio(float aspectRatio)
-{
-    m_AspectRatio = aspectRatio;
-    m_ProjectionMatrix = glm::perspective(glm::radians(s_DefaultFov), m_AspectRatio, 0.1f, 100.0f);
-    RecalculateMatrices();
-}
-
 void FpvCamera::ProcessKeyPress(float dt)
 {
     bool keyPressed = false;
