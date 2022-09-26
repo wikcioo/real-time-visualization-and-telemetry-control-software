@@ -129,6 +129,10 @@ namespace serial {
         tty.c_cc[VTIME] = 0;
         tty.c_cc[VMIN] = 1;
 
+        // Needed because the data hasn't arrived at the FIFO buffer at this time.
+        // We need to wait a bit for it to arrive and then we flush input buffer next.
+        usleep(5000);
+
         // Flush the input buffer
         if (tcflush(m_FileDescriptor, TCIFLUSH) < 0) {
             throw SerialPortException("Failed to flush input buffer.", strerror(errno));
