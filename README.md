@@ -77,3 +77,15 @@ Scene:
 Control Panels:
 - [x] render imgui widgets
 - [x] gets an entitie from the scene to modify it's translations
+
+Serial:
+- [x] establish connection with the serial port
+- [x] enable port configuration
+- [x] display raw serial data
+- [x] provide an interface to the port via a console
+- [x] add instructions to connect to the device
+
+Cube-related:
+- [x] get G-force from 3 axis
+- [x] display graphs of the G-force in 3 axis
+- [x] parse the G-forces into pitch and roll angles that update the cube's model matrix
