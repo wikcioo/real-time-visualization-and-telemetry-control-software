@@ -52,6 +52,26 @@ private:
         void Draw(const char* title, bool* p_open);
         void ExecCommand(const std::string& command_line);
     } m_ConsolePanel;
+
+    struct OrientationGraphPlotter
+    {
+        bool activated;
+        int samples;
+        int values_offset;
+        float err_threshold;
+        float prev_x, prev_y, prev_z;
+        std::vector<float> x_values;
+        std::vector<float> y_values;
+        std::vector<float> z_values;
+
+        OrientationGraphPlotter(int _samples, float error_threshold);
+        ~OrientationGraphPlotter();
+
+        void Resize(int _samples);
+        void Filter(float& x, float& y, float& z);
+        void AddValues(float x, float y, float z);
+        void Plot(const char* title, bool* p_open);
+    } m_Plotter;
 private:
     void setSerialDevice(const std::string& dev);
     void clearSerialDevice();

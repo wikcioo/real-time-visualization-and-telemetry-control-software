@@ -236,8 +236,90 @@ void ControlPanel::SerialConsole::ExecCommand(const std::string& command_line)
     ScrollToBottom = true;
 }
 
+ControlPanel::OrientationGraphPlotter::OrientationGraphPlotter(int _samples, float error_threshold)
+    : activated(false), samples(_samples), values_offset(0), err_threshold(error_threshold), prev_x(0.0f), prev_y(0.0f), prev_z(0.0f)
+{
+    Resize(samples);
+}
+
+ControlPanel::OrientationGraphPlotter::~OrientationGraphPlotter()
+{
+    values_offset = 0;
+    prev_x = prev_y = prev_z = 0.0f;
+    x_values.clear();
+    y_values.clear();
+    z_values.clear();
+}
+
+void ControlPanel::OrientationGraphPlotter::Resize(int _samples)
+{
+    x_values.resize(_samples);
+    y_values.resize(_samples);
+    z_values.resize(_samples);
+}
+
+// TODO: Fix the bug where the axis locks itself to the specific value for extended period of time
+void ControlPanel::OrientationGraphPlotter::Filter(float& x, float& y, float& z)
+{
+    if (activated) {
+        prev_x = x;
+        prev_y = y;
+        prev_z = z;
+        activated = false;
+        return;
+    }
+
+    if (std::abs(x - prev_x) > err_threshold) {
+        x = prev_x;
+    }
+    if (std::abs(y - prev_y) > err_threshold) {
+        y = prev_y;
+    }
+    if (std::abs(z - prev_z) > err_threshold) {
+        z = prev_z;
+    }
+
+    prev_x = x;
+    prev_y = y;
+    prev_z = z;
+}
+
+void ControlPanel::OrientationGraphPlotter::AddValues(float x, float y, float z)
+{
+    x_values[values_offset] = x;
+    y_values[values_offset] = y;
+    z_values[values_offset] = z;
+    values_offset = (values_offset + 1) % samples;
+}
+
+void ControlPanel::OrientationGraphPlotter::Plot(const char* title, bool* p_open)
+{
+    ImGui::Begin(title, p_open);
+    ImVec2 size = ImGui::GetContentRegionAvail();
+    static int plot_v_offset = 30;
+
+    ImGui::Text("x-axis g-force");
+    ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+    ImGui::PlotLines("x-axis", x_values.data(), samples, values_offset, NULL, -1.0f, 1.0f, ImVec2(size.x, size.y / 3 - plot_v_offset));
+    ImGui::PopStyleColor();
+    ImGui::Dummy(ImVec2(0, 10));
+
+    ImGui::Text("y-axis g-force");
+    ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+    ImGui::PlotLines("y-axis", y_values.data(), samples, values_offset, NULL, -1.0f, 1.0f, ImVec2(size.x, size.y / 3 - plot_v_offset));
+    ImGui::PopStyleColor();
+    ImGui::Dummy(ImVec2(0, 10));
+
+    ImGui::Text("z-axis g-force");
+    ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(0.01f, 0.57f, 1.0f, 1.0f));
+    ImGui::PlotLines("z-axis", z_values.data(), samples, values_offset, NULL, -1.0f, 1.0f, ImVec2(size.x, size.y / 3 - plot_v_offset));
+    ImGui::PopStyleColor();
+
+    ImGui::End();
+}
+
 ControlPanel::ControlPanel()
-    : m_SerialPort(nullptr), m_IsSerialDeviceConnected(false), m_LogPanel{this}, m_ConsolePanel{this}
+    : m_SerialPort(nullptr), m_IsSerialDeviceConnected(false), m_LogPanel{this}, m_ConsolePanel{this}, m_Plotter{360, 0.05f}
 {
 }
 
@@ -251,6 +333,7 @@ void ControlPanel::setSerialDevice(const std::string& dev)
         m_SerialPort = std::make_unique<serial::SerialPort>(dev);
         m_ConsolePanel.AddLog("Successfully connected to %s\n", dev.c_str());
         m_IsSerialDeviceConnected = true;
+        m_Plotter.activated = true;
     } catch (serial::SerialPortException& e) {
         m_ConsolePanel.AddLog("Failed to connect to %s\nError: %s\n", dev.c_str(), e.what());
         m_IsSerialDeviceConnected = false;
@@ -274,8 +357,6 @@ void ControlPanel::Draw(std::shared_ptr<SceneView> scene)
 {
     static bool demo = true;
     ImGui::ShowDemoWindow(&demo);
-    static bool stack_tool = true;
-    ImGui::ShowStackToolWindow(&stack_tool);
 
     static bool wireframe_window = true;
     static bool wireframe_on = false;
@@ -317,15 +398,37 @@ void ControlPanel::Draw(std::shared_ptr<SceneView> scene)
 
     // Raw Serial Log
     static bool serial_log_open;
+    static float x_accel = 0.0f, y_accel = 0.0f, z_accel = 0.0f;
+
     if (m_SerialPort && m_SerialPort->IsDataReady()) {
         uint8_t buffer[32];
         memset(buffer, 0, 32);
         m_SerialPort->ReadData((uint8_t*)buffer, 32);
+
+        std::string data = (char*)buffer;
+        std::stringstream ss(data);
+        ss >> x_accel >> y_accel >> z_accel;
+        m_Plotter.Filter(x_accel, y_accel, z_accel);
+
+        float roll = atan2(y_accel, z_accel) * 180/M_PI;
+        float pitch = atan2(-x_accel, sqrt(y_accel*y_accel + z_accel*z_accel)) * 180/M_PI;
+        glm::mat4 rot(1.0f);
+        rot = glm::rotate(rot, glm::radians((float)pitch), glm::vec3(1, 0, 0));
+        rot = glm::rotate(rot, glm::radians((float)roll), glm::vec3(0, 0, 1));
+        scene->GetEntity("cube")->SetRotation(rot);
+
         m_LogPanel.AddLog("%s", buffer);
+
+        // Update plotting values
+        m_Plotter.AddValues(x_accel, y_accel, z_accel);
     }
     m_LogPanel.Draw("Serial Log", &serial_log_open);
 
     // Serial Console
     static bool serial_console_open;
     m_ConsolePanel.Draw("Serial Console", &serial_console_open);
+
+    // Plotting
+    static bool graphs_open = true;
+    m_Plotter.Plot("Orientation Graphs", &graphs_open);
 }
