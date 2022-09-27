@@ -15,6 +15,7 @@ namespace serial {
         int IsDataReady();
         void SendData(uint8_t* buffer, uint8_t length);
         void ReadData(uint8_t* buffer, uint8_t length);
+        std::string GetDeviceName() { return m_Device; }
     private:
         int m_FileDescriptor;
         const std::string m_Device;
