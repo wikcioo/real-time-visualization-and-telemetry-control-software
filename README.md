@@ -1,8 +1,27 @@
 # Real-Time Visualization and Telemetry Control Software
 ![Application screenshot](docs/public/screenshots/screenshot_v01.png?raw=true)
 
-### TODOs:
+## How to build?
+**Note: this project has only been tested on Linux**
 
+### Install depencencies
+On Arch based distributions:
+```sh
+sudo pacman -S base-devel glfw-x11 glm
+```
+
+### Build
+```sh
+make
+```
+
+### Run
+```sh
+./build/ccs
+```
+<br>
+
+### Features:
 Main:
 - [x] creates and starts application
 
