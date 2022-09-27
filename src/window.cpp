@@ -8,7 +8,6 @@ static void glfw_error_callback(int code, const char* description)
 
 void GLWindow::processInput()
 {
-    if (Input::IsKeyPressed(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(m_Window, true);
     if (Input::IsKeyPressed(GLFW_KEY_Q))
     {
         m_SceneView->SetSceneInteractive(false);
