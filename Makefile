@@ -25,7 +25,7 @@ all:
 	fi
 	@mkdir -p build
 	@echo "Compiling local objects"
-	@make --no-print-directory $(BUILD_DIR)/$(EXE)
+	@make -j4 --no-print-directory $(BUILD_DIR)/$(EXE)
 	@echo "Build complete for $(ECHO_MESSAGE)"
 
 $(BUILD_DIR)/$(EXE): $(OBJS)
