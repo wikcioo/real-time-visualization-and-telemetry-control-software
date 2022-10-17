@@ -1,5 +1,5 @@
 # Real-Time Visualization and Telemetry Control Software
-![Application screenshot](docs/public/screenshots/screenshot_v01.png?raw=true)
+![Application screenshot](docs/public/screenshots/screenshot_v02.png?raw=true)
 
 ## How to build?
 **Note: this project has only been tested on Linux**
