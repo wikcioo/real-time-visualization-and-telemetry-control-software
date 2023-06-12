@@ -1,21 +1,37 @@
-EXE = ccs
-INC_DIR = include
-SRC_DIR = src
-BUILD_DIR = build
-IMGUI_DIR = vendor/imgui
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
-OBJS = $(addprefix $(BUILD_DIR)/, $(addsuffix .cpp.o, $(basename $(notdir $(SOURCES)))))
-IMGUI_OBJS =
-UNAME_S := $(shell uname -s)
+TARGET := app
+CXX    := g++
 
-CXXFLAGS = -I$(INC_DIR) -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
-CXXFLAGS += -g -Wall -Wformat -Wpedantic -Wshadow
-LIBS =
+BUILD_DIR   := build
+USR_INC_DIR := include
+USR_SRC_DIR := src
+IMGUI_DIR   := vendor/imgui
 
-ifeq ($(UNAME_S), Linux)
-	ECHO_MESSAGE = "Linux"
-	LIBS += `pkg-config --static --libs glfw3`
-	LIBS += `pkg-config --libs glew`
+CXX_INCLUDES := \
+-I$(USR_INC_DIR) \
+-I$(IMGUI_DIR) \
+-I$(IMGUI_DIR)/backends
+
+WARNINGS := \
+-Wall \
+-Wformat \
+-Wpedantic \
+-Wshadow
+
+CXX_FLAGS := \
+-std=c++14 \
+$(CXX_INCLUDES) \
+$(WARNINGS)
+
+LD_FLAGS := \
+
+USR_SOURCES := $(wildcard $(USR_SRC_DIR)/*.cpp)
+USR_OBJECTS := $(addprefix $(BUILD_DIR)/, $(addsuffix .cpp.o, $(basename $(notdir $(USR_SOURCES)))))
+
+OS_NAME := $(shell uname -s)
+
+ifeq ($(OS_NAME), Linux)
+	LD_FLAGS += `pkg-config --static --libs glfw3`
+	LD_FLAGS += `pkg-config --libs glew`
 endif
 
 all:
@@ -23,16 +39,16 @@ all:
 		echo "Compiling imgui objects";\
 		$(MAKE) --no-print-directory -C $(IMGUI_DIR)/;\
 	fi
-	@mkdir -p build
+	@mkdir -p $(BUILD_DIR)
 	@echo "Compiling local objects"
-	@make -j4 --no-print-directory $(BUILD_DIR)/$(EXE)
-	@echo "Build complete for $(ECHO_MESSAGE)"
+	@make --no-print-directory $(BUILD_DIR)/$(TARGET)
+	@echo "Build complete for $(OS_NAME)"
 
-$(BUILD_DIR)/$(EXE): $(OBJS)
-	$(CXX) -o $@ $^ $(wildcard $(IMGUI_DIR)/objs/*.cpp.o) $(CXXFLAGS) $(LIBS)
+$(BUILD_DIR)/$(TARGET): $(USR_OBJECTS)
+	$(CXX) $(CXX_FLAGS) $(LD_FLAGS) $^ $(wildcard $(IMGUI_DIR)/objs/*.cpp.o) -o $@
 
-$(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp $(INC_DIR)/%.hpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+$(BUILD_DIR)/%.cpp.o: $(USR_SRC_DIR)/%.cpp $(USR_INC_DIR)/%.hpp
+	$(CXX) -c $(CXX_FLAGS) $< -o $@
 
 clean:
 	rm -rf $(BUILD_DIR)
