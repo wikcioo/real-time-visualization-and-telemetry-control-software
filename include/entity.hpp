@@ -33,6 +33,7 @@ private:
     glm::mat4 m_Rotation;
     glm::mat4 m_Scale;
     glm::mat4 m_Model;
+    glm::vec3 m_Color;
     unsigned int m_ID;
 private:
     void RecalculateModelMatrix();

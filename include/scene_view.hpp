@@ -1,5 +1,5 @@
 #pragma once
-#include <map>
+#include <vector>
 #include <memory>
 #include "fpv_camera.hpp"
 #include "arcball_camera.hpp"
@@ -18,7 +18,7 @@ public:
     ~SceneView();
 
     std::shared_ptr<Entity> GetEntity(const std::string& name);
-    const std::map<std::string, std::shared_ptr<Entity>>& GetEntities() { return m_Entities; }
+    const std::vector<std::pair<std::string, std::shared_ptr<Entity>>>& GetEntities() { return m_Entities; }
     const CameraType& GetCameraType() { return m_CameraType; }
     bool IsSceneInteractive() { return m_IsSceneInteractive; }
     void SetSceneInteractive(bool interactive);
@@ -34,7 +34,7 @@ private:
     std::unique_ptr<Camera> m_Camera;
     CameraType m_CameraType;
     std::unique_ptr<renderer::GLFrameBuffer> m_Framebuffer;
-    std::map<std::string, std::shared_ptr<Entity>> m_Entities;
+    std::vector<std::pair<std::string, std::shared_ptr<Entity>>> m_Entities;
 private:
     void InitializeEntities();
 };

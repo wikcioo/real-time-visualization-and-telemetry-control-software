@@ -55,7 +55,7 @@ void Entity::SetScale(const glm::mat4& scale)
 
 void Entity::SetColor(const glm::vec3& color)
 {
-    m_Shader->SetVec3("u_Color", color);
+    m_Color = color;
 }
 
 void Entity::RecalculateModelMatrix()
@@ -73,7 +73,7 @@ void Entity::Draw(const glm::mat4& viewProjectionMatrix)
     m_Shader->Bind();
     m_Shader->SetMat4("u_ViewProjection", viewProjectionMatrix);
     m_Shader->SetMat4("u_Model", m_Model);
-    // m_Material->ApplyUniforms();
+    m_Shader->SetVec3("u_Color", m_Color);
 
     m_Mesh->Bind();
     m_Mesh->Draw();

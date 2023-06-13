@@ -26,19 +26,19 @@ SceneView::~SceneView()
 
 void SceneView::InitializeEntities()
 {
-    std::vector<Vertex> vertices;
+    std::vector<Vertex> cube_vertices;
 
-    vertices.push_back({glm::vec3(-1.0f, -1.0f,  1.0f)});   // front bottom-left  0
-    vertices.push_back({glm::vec3(-1.0f,  1.0f,  1.0f)});   // front top-left     1
-    vertices.push_back({glm::vec3(1.0f,  1.0f,  1.0f)});    // front top-right    2
-    vertices.push_back({glm::vec3(1.0f, -1.0f,  1.0f)});    // front bottom-right 3
-    vertices.push_back({glm::vec3(-1.0f, -1.0f, -1.0f)});   // back bottom-left   4
-    vertices.push_back({glm::vec3(-1.0f,  1.0f, -1.0f)});   // back top-left      5
-    vertices.push_back({glm::vec3(1.0f,  1.0f, -1.0f)});    // back top-right     6
-    vertices.push_back({glm::vec3(1.0f, -1.0f, -1.0f)});    // back bottom-right  7
+    cube_vertices.push_back({glm::vec3(-1.0f, -1.0f, 1.0f)});  // front bottom-left  0
+    cube_vertices.push_back({glm::vec3(-1.0f, 1.0f, 1.0f)});   // front top-left     1
+    cube_vertices.push_back({glm::vec3(1.0f, 1.0f, 1.0f)});    // front top-right    2
+    cube_vertices.push_back({glm::vec3(1.0f, -1.0f, 1.0f)});   // front bottom-right 3
+    cube_vertices.push_back({glm::vec3(-1.0f, -1.0f, -1.0f)}); // back bottom-left   4
+    cube_vertices.push_back({glm::vec3(-1.0f, 1.0f, -1.0f)});  // back top-left      5
+    cube_vertices.push_back({glm::vec3(1.0f, 1.0f, -1.0f)});   // back top-right     6
+    cube_vertices.push_back({glm::vec3(1.0f, -1.0f, -1.0f)});  // back bottom-right  7
 
     // Counter clock-wise winding
-    std::vector<unsigned int> indices {
+    std::vector<unsigned int> cube_indices{
         0, 2, 1, 0, 3, 2, // front face
         7, 5, 6, 7, 4, 5, // back face
         1, 6, 5, 1, 2, 6, // top face
@@ -48,55 +48,71 @@ void SceneView::InitializeEntities()
     };
 
     std::shared_ptr<Entity> e1 = std::make_shared<Entity>();
-    e1->Initialize(vertices, indices, GL_TRIANGLES, "res/shaders/basic_vs.glsl", "res/shaders/basic_fs.glsl");
+    e1->Initialize(cube_vertices,
+                   cube_indices,
+                   GL_TRIANGLES,
+                   "res/shaders/basic_vs.glsl",
+                   "res/shaders/basic_fs.glsl");
     e1->SetScale(glm::scale(glm::mat4(1.0f), glm::vec3(0.5f)));
-    m_Entities.insert({"cube", e1});
 
-    vertices.clear();
-    indices.clear();
+    std::vector<Vertex> plane_vertices;
+    std::vector<unsigned int> plane_indices;
 
     int slices = 50;
-    for(int j=0; j<=slices; ++j) {
-        for(int i=0; i<=slices; ++i) {
-            float x = (float)i/(float)slices;
+    for (int j = 0; j <= slices; ++j)
+    {
+        for (int i = 0; i <= slices; ++i)
+        {
+            float x = (float)i / (float)slices;
             float y = 0;
-            float z = (float)j/(float)slices;
-            vertices.push_back({glm::vec3(x, y, z)});
+            float z = (float)j / (float)slices;
+            plane_vertices.push_back({glm::vec3(x, y, z)});
         }
     }
 
-    for(int j=0; j<slices; ++j) {
-        for(int i=0; i<slices; ++i) {
-            int row1 =  j    * (slices+1);
-            int row2 = (j+1) * (slices+1);
+    for (int j = 0; j < slices; ++j)
+    {
+        for (int i = 0; i < slices; ++i)
+        {
+            int row1 = j * (slices + 1);
+            int row2 = (j + 1) * (slices + 1);
 
-            indices.push_back(row1+1);
-            indices.push_back(row1+i+1);
-            indices.push_back(row1+i+1);
-            indices.push_back(row2+i+1);
+            plane_indices.push_back(row1 + 1);
+            plane_indices.push_back(row1 + i + 1);
+            plane_indices.push_back(row1 + i + 1);
+            plane_indices.push_back(row2 + i + 1);
 
-            indices.push_back(row2+i+1);
-            indices.push_back(row2+i);
-            indices.push_back(row2+i);
-            indices.push_back(row1+i);
+            plane_indices.push_back(row2 + i + 1);
+            plane_indices.push_back(row2 + i);
+            plane_indices.push_back(row2 + i);
+            plane_indices.push_back(row1 + i);
         }
     }
 
     std::shared_ptr<Entity> e2 = std::make_shared<Entity>();
-    e2->Initialize(vertices, indices, GL_LINES, "res/shaders/basic_vs.glsl", "res/shaders/basic_fs.glsl");
+    e2->Initialize(plane_vertices,
+                   plane_indices,
+                   GL_LINES,
+                   "res/shaders/basic_vs.glsl",
+                   "res/shaders/basic_fs.glsl");
     float scale = 100.0f;
     e2->SetScale(glm::scale(glm::mat4(1.0f), glm::vec3(scale)));
-    e2->SetTranslation(glm::translate(glm::mat4(1.0f), glm::vec3(-scale/2, 0.0f, -scale/2)));
-    m_Entities.insert({"plane", e2});
+    e2->SetTranslation(glm::translate(glm::mat4(1.0f), glm::vec3(-scale / 2, 0.0f, -scale / 2)));
+
+    m_Entities.push_back({"plane", e2});
+    m_Entities.push_back({"cube", e1});
 }
 
 std::shared_ptr<Entity> SceneView::GetEntity(const std::string& name)
 {
-    auto pos = m_Entities.find(name);
-    if (pos != m_Entities.end())
+    for (auto entity : m_Entities)
     {
-        return pos->second;
+        if (entity.first == name)
+        {
+            return entity.second;
+        }
     }
+
     std::cout << "No entity found with name: " << name << std::endl;
     return {};
 }
@@ -160,7 +176,7 @@ void SceneView::Draw()
 {
     m_Framebuffer->Bind();
 
-    glClearColor(0.4f, 0.2f, 0.7f, 1.0f);
+    glClearColor(0.17f, 0.17f, 0.17f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     for (auto entity : m_Entities)

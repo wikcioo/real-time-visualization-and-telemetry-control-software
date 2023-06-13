@@ -367,19 +367,19 @@ void ControlPanel::Draw(std::shared_ptr<SceneView> scene)
     } else {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
-    static ImVec4 cube_color = ImVec4(48/255.0f, 170/255.0f, 201/255.0f, 1.0f);
+    static ImVec4 cube_color = ImVec4(48 / 255.0f, 170 / 255.0f, 201 / 255.0f, 1.0f);
+    static ImVec4 plane_color = ImVec4(0.99f, 1.0f, 0.96f, 1.0f);
     ImGui::ColorEdit3("Cube color", (float*)&cube_color);
     auto entities = scene->GetEntities();
     int c = 1;
     if (ImGui::TreeNode("Entities"))
     {
-        for (auto it = entities.begin(); it != entities.end(); it++)
+        for (auto entity : entities)
         {
             ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-            ImGui::TreeNodeEx((void*)(intptr_t)c, node_flags, "id = %u -> %s", it->second->GetID(), it->first.c_str());
+            ImGui::TreeNodeEx((void *)(intptr_t)c, node_flags, "id = %u -> %s", entity.second.get()->GetID(), entity.first.c_str());
             c++;
-        }
-        ImGui::TreePop();
+        }     ImGui::TreePop();
     }
     static int cam_nr = (int)scene->GetCameraType();
     ImGui::RadioButton("Arcball Camera", &cam_nr, 0); ImGui::SameLine();
@@ -394,7 +394,7 @@ void ControlPanel::Draw(std::shared_ptr<SceneView> scene)
     auto plane = scene->GetEntity("plane");
 
     cube->SetColor({cube_color.x, cube_color.y, cube_color.z});
-    plane->SetColor({cube_color.x, cube_color.y, cube_color.z});
+    plane->SetColor({plane_color.x, plane_color.y, plane_color.z});
 
     // Raw Serial Log
     static bool serial_log_open;
