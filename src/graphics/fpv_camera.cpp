@@ -1,7 +1,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "core/input.hpp"
 #include "fpv_camera.hpp"
-#include "input.hpp"
 
 FpvCamera::FpvCamera(const glm::vec3& position, const glm::vec3& direction, float aspectRatio)
     : Camera(position, direction), m_Pitch(0.0f), m_Yaw(-90.0f), m_MovementSpeed(s_DefaultMovementSpeed)

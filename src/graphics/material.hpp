@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "shader.hpp"
+#include "core/shader.hpp"
 
 class Material
 {

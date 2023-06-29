@@ -4,10 +4,10 @@
 #include <string>
 #include <memory>
 
-#include "opengl_context.hpp"
-#include "ui_context.hpp"
-#include "scene_view.hpp"
-#include "control_panel.hpp"
+#include "graphics/opengl_context.hpp"
+#include "ui/ui_context.hpp"
+#include "ui/scene_view.hpp"
+#include "ui/control_panel.hpp"
 
 #include <GLFW/glfw3.h>
 

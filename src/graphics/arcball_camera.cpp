@@ -1,7 +1,8 @@
+#include "arcball_camera.hpp"
+
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "arcball_camera.hpp"
-#include "input.hpp"
+#include "core/input.hpp"
 
 ArcballCamera::ArcballCamera(const glm::vec3& position, const glm::vec3& target, float aspectRatio)
     : Camera(position, glm::vec3(0)), m_Target(target)

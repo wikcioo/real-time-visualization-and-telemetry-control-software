@@ -1,13 +1,12 @@
 TARGET := app
 CXX    := g++
 
-BUILD_DIR   := build
-USR_INC_DIR := include
-USR_SRC_DIR := src
-IMGUI_DIR   := vendor/imgui
+BUILD_DIR := build
+SRC_DIR   := src
+IMGUI_DIR := vendor/imgui
 
 CXX_INCLUDES := \
--I$(USR_INC_DIR) \
+-I$(SRC_DIR) \
 -I$(IMGUI_DIR) \
 -I$(IMGUI_DIR)/backends
 
@@ -24,8 +23,13 @@ $(WARNINGS)
 
 LD_FLAGS := \
 
-USR_SOURCES := $(wildcard $(USR_SRC_DIR)/*.cpp)
-USR_OBJECTS := $(addprefix $(BUILD_DIR)/, $(addsuffix .cpp.o, $(basename $(notdir $(USR_SOURCES)))))
+SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
+SOURCES += $(wildcard $(SRC_DIR)/core/*.cpp)
+SOURCES += $(wildcard $(SRC_DIR)/graphics/*.cpp)
+SOURCES += $(wildcard $(SRC_DIR)/serial/*.cpp)
+SOURCES += $(wildcard $(SRC_DIR)/ui/*.cpp)
+
+OBJECTS := $(addprefix $(BUILD_DIR)/, $(addsuffix .cpp.o, $(basename $(notdir $(SOURCES)))))
 
 OS_NAME := $(shell uname -s)
 
@@ -44,10 +48,22 @@ all:
 	@make --no-print-directory $(BUILD_DIR)/$(TARGET)
 	@echo "Build complete for $(OS_NAME)"
 
-$(BUILD_DIR)/$(TARGET): $(USR_OBJECTS)
+$(BUILD_DIR)/$(TARGET): $(OBJECTS)
 	$(CXX) $(CXX_FLAGS) $(LD_FLAGS) $^ $(wildcard $(IMGUI_DIR)/objs/*.cpp.o) -o $@
 
-$(BUILD_DIR)/%.cpp.o: $(USR_SRC_DIR)/%.cpp $(USR_INC_DIR)/%.hpp
+$(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
+	$(CXX) -c $(CXX_FLAGS) $< -o $@
+
+$(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/core/%.cpp $(SRC_DIR)/core/%.hpp
+	$(CXX) -c $(CXX_FLAGS) $< -o $@
+
+$(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/graphics/%.cpp $(SRC_DIR)/graphics/%.hpp
+	$(CXX) -c $(CXX_FLAGS) $< -o $@
+
+$(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/serial/%.cpp $(SRC_DIR)/serial/%.hpp
+	$(CXX) -c $(CXX_FLAGS) $< -o $@
+
+$(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/ui/%.cpp $(SRC_DIR)/ui/%.hpp
 	$(CXX) -c $(CXX_FLAGS) $< -o $@
 
 clean:

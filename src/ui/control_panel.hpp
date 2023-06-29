@@ -2,7 +2,7 @@
 
 #include "scene_view.hpp"
 #include "imgui.h"
-#include "serial_port.hpp"
+#include "serial/serial_port.hpp"
 
 class ControlPanel
 {

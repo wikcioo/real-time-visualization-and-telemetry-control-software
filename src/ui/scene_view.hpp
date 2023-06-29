@@ -1,10 +1,12 @@
 #pragma once
+
 #include <vector>
 #include <memory>
-#include "fpv_camera.hpp"
-#include "arcball_camera.hpp"
-#include "entity.hpp"
-#include "opengl_buffer_manager.hpp"
+
+#include "graphics/fpv_camera.hpp"
+#include "graphics/arcball_camera.hpp"
+#include "graphics/entity.hpp"
+#include "graphics/opengl_buffer_manager.hpp"
 
 enum class CameraType
 {

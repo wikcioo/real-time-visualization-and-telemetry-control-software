@@ -1,8 +1,10 @@
 #include "scene_view.hpp"
-#include "input.hpp"
+
+#include "core/input.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/glew.h>
+
 #include "imgui.h"
 
 SceneView::SceneView(int width, int height, CameraType cameraType)

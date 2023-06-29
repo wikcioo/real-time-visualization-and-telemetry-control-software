@@ -3,7 +3,11 @@
         {
             "name": "App",
             "includePath": [
-                "${workspaceFolder}/include",
+                "${workspaceFolder}/src/",
+                "${workspaceFolder}/src/core",
+                "${workspaceFolder}/src/graphics",
+                "${workspaceFolder}/src/serial",
+                "${workspaceFolder}/src/ui",
                 "${workspaceFolder}/vendor/imgui",
                 "${workspaceFolder}/vendor/imgui/backends"
             ],

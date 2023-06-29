@@ -1,5 +1,6 @@
 #include "ui_context.hpp"
-#include "window.hpp"
+
+#include "core/window.hpp"
 
 #include <GL/glew.h>
 
